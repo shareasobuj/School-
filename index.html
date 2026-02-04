@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>টিচার্স প্যানেল - স্মার্ট স্কুল ম্যানেজমেন্ট</title>
+    <style>
+        :root {
+            --primary: #1e40af;
+            --secondary: #64748b;
+            --success: #15803d;
+            --danger: #b91c1c;
+            --bg: #f1f5f9;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Hind Siliguri', sans-serif; }
+        body { background-color: var(--bg); color: #1e293b; line-height: 1.6; }
+
+        /* প্রিন্টের সময় অপ্রয়োজনীয় জিনিস লুকানোর জন্য */
+        @media print {
+            nav, .btn-group, .no-print, .delete-btn { display: none !important; }
+            .card { box-shadow: none; border: 1px solid #ddd; }
+            .container { max-width: 100%; margin: 0; padding: 0; }
+        }
+
+        nav { background: var(--primary); color: white; padding: 15px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; }
+        .nav-menu button { background: rgba(255,255,255,0.2); border: none; color: white; padding: 8px 12px; border-radius: 5px; cursor: pointer; margin-left: 5px; }
+
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 25px; }
+
+        .btn-group { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .btn { padding: 10px 18px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; color: white; display: flex; align-items: center; gap: 5px; }
+        .btn-primary { background: var(--primary); }
+        .btn-success { background: var(--success); }
+        .btn-print { background: #475569; }
+
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(30,64,175,0.1); }
+
+        .student-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .student-card { background: white; border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; position: relative; display: flex; padding: 15px; gap: 15px; }
+        .std-photo { width: 100px; height: 100px; object-fit: cover; border-radius: 8px; border: 2px solid #f1f5f9; }
+        .std-details h4 { color: var(--primary); font-size: 18px; }
+        .std-details p { font-size: 13px; color: #475569; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; border: 1px solid #e2e8f0; text-align: left; font-size: 14px; }
+        th { background: #f8fafc; }
+
+        .hidden { display: none; }
+        .status-present { color: var(--success); font-weight: bold; }
+        .status-absent { color: var(--danger); font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 20px;">🎓</span>
+        <h3>টিচার্স ড্যাশবোর্ড</h3>
+    </div>
+    <div class="nav-menu">
+        <button onclick="showSection('add')">ভর্তি</button>
+        <button onclick="showSection('list')">শিক্ষার্থী</button>
+        <button onclick="showSection('attendance')">উপস্থিতি</button>
+        <button onclick="showSection('result')">ফলাফল</button>
+    </div>
+</nav>
+
+<div class="container">
+    
+    <section id="section-add" class="card">
+        <h2>📝 নতুন শিক্ষার্থী ভর্তি ফরম</h2>
+        <div class="form-grid">
+            <input type="text" id="name" placeholder="শিক্ষার্থীর নাম">
+            <select id="class">
+                <option value="">ক্লাস নির্বাচন</option>
+                <option>৬ষ্ঠ</option><option>৭ম</option><option>৮ম</option><option>৯ম</option><option>১০ম</option>
+            </select>
+            <input type="number" id="roll" placeholder="রোল নম্বর">
+            <input type="text" id="father" placeholder="পিতার নাম">
+            <input type="text" id="mother" placeholder="মাতার নাম">
+            <input type="file" id="photo" accept="image/*">
+        </div>
+        <textarea id="address" placeholder="ঠিকানা লিখুন..." rows="2" style="margin-bottom: 20px;"></textarea>
+        <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="saveStudent()">ডেটা সেভ করুন</button>
+    </section>
+
+    <section id="section-list" class="hidden">
+        <div class="btn-group no-print">
+            <button class="btn btn-success" onclick="downloadCSV()">Excel (CSV) ডাউনলোড</button>
+            <button class="btn btn-print" onclick="window.print()">রিপোর্ট প্রিন্ট করুন</button>
+            <select id="filterClass" onchange="renderStudents()" style="width: 150px;">
+                <option value="All">সব ক্লাস</option>
+                <option>৬ষ্ঠ</option><option>৭ম</option><option>৮ম</option><option>৯ম</option><option>১০ম</option>
+            </select>
+        </div>
+        <h2 id="listTitle">শিক্ষার্থী তালিকা</h2>
+        <div class="student-grid" id="studentDisplay"></div>
+    </section>
+
+    <section id="section-attendance" class="card hidden">
+        <h2>📅 আজকের উপস্থিতি রেজিস্টার</h2>
+        <div class="btn-group no-print">
+            <button class="btn btn-print" onclick="window.print()">উপস্থিতি শিট প্রিন্ট</button>
+        </div>
+        <table>
+            <thead>
+                <tr><th>রোল</th><th>নাম</th><th>ক্লাস</th><th>অবস্থা</th></tr>
+            </thead>
+            <tbody id="attTableBody"></tbody>
+        </table>
+    </section>
+
+    <section id="section-result" class="card hidden">
+        <h2>📊 পরীক্ষার ফলাফল ও মার্কশিট</h2>
+        <div class="form-grid no-print">
+            <select id="resStudentSelect"></select>
+            <input type="number" id="marks" placeholder="প্রাপ্ত নম্বর">
+            <button class="btn btn-primary" onclick="addResult()">ফলাফল যোগ</button>
+        </div>
+        <button class="btn btn-print no-print" onclick="window.print()" style="margin-bottom:15px">রেজাল্ট শিট প্রিন্ট</button>
+        <table>
+            <thead>
+                <tr><th>রোল</th><th>নাম</th><th>ক্লাস</th><th>গ্রেড</th></tr>
+            </thead>
+            <tbody id="resTableBody"></tbody>
+        </table>
+    </section>
+
+</div>
+
+<script>
+    let students = JSON.parse(localStorage.getItem('edu_db')) || [];
+    let results = JSON.parse(localStorage.getItem('edu_results')) || [];
+
+    function showSection(id) {
+        document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+        document.getElementById('section-' + id).classList.remove('hidden');
+        if(id === 'list') renderStudents();
+        if(id === 'attendance') renderAttendance();
+        if(id === 'result') updateResultUI();
+    }
+
+    function saveStudent() {
+        const fields = ['name', 'class', 'roll', 'father', 'mother', 'address'];
+        const data = {};
+        fields.forEach(f => data[f] = document.getElementById(f).value);
+        const photoFile = document.getElementById('photo').files[0];
+
+        if(!data.name || !data.roll) return alert("নাম এবং রোল অবশ্যই দিন!");
+
+        const processSave = (imgBase64) => {
+            students.push({...data, photo: imgBase64, id: Date.now()});
+            localStorage.setItem('edu_db', JSON.stringify(students));
+            alert("সফলভাবে ভর্তি করা হয়েছে!");
+            location.reload();
+        };
+
+        if(photoFile) {
+            const reader = new FileReader();
+            reader.onload = (e) => processSave(e.target.result);
+            reader.readAsDataURL(photoFile);
+        } else {
+            processSave('https://via.placeholder.com/100');
+        }
+    }
+
+    function renderStudents() {
+        const display = document.getElementById('studentDisplay');
+        const filter = document.getElementById('filterClass').value;
+        display.innerHTML = '';
+
+        const filtered = filter === 'All' ? students : students.filter(s => s.class === filter);
+
+        filtered.forEach(s => {
+            display.innerHTML += `
+                <div class="student-card">
+                    <img src="${s.photo}" class="std-photo">
+                    <div class="std-details">
+                        <h4>${s.name}</h4>
+                        <p><b>ক্লাস:</b> ${s.class} | <b>রোল:</b> ${s.roll}</p>
+                        <p><b>পিতা:</b> ${s.father}</p>
+                        <p><b>ঠিকানা:</b> ${s.address}</p>
+                        <button class="no-print" onclick="deleteStd(${s.id})" style="color:red; border:none; background:none; cursor:pointer; font-size:12px; margin-top:5px;">মুছে ফেলুন</button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function deleteStd(id) {
+        if(confirm('মুছে ফেলতে চান?')) {
+            students = students.filter(s => s.id !== id);
+            localStorage.setItem('edu_db', JSON.stringify(students));
+            renderStudents();
+        }
+    }
+
+    // CSV/Excel ডাউনলোড ফাংশন
+    function downloadCSV() {
+        let csvContent = "data:text/csv;charset=utf-8,নাম,রোল,ক্লাস,পিতা,মাতা,ঠিকানা\n";
+        students.forEach(s => {
+            csvContent += `${s.name},${s.roll},${s.class},${s.father},${s.mother},${s.address}\n`;
+        });
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "student_list.csv");
+        document.body.appendChild(link);
+        link.click();
+    }
+
+    function renderAttendance() {
+        const tbody = document.getElementById('attTableBody');
+        tbody.innerHTML = '';
+        students.forEach(s => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${s.roll}</td>
+                    <td>${s.name}</td>
+                    <td>${s.class}</td>
+                    <td>
+                        <select class="no-print">
+                            <option>উপস্থিত</option>
+                            <option>অনুপস্থিত</option>
+                        </select>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    function updateResultUI() {
+        const select = document.getElementById('resStudentSelect');
+        select.innerHTML = '<option value="">ছাত্র নির্বাচন করুন</option>';
+        students.forEach(s => {
+            select.innerHTML += `<option value="${s.id}">${s.class} - ${s.name} (${s.roll})</option>`;
+        });
+        renderResultTable();
+    }
+
+    function addResult() {
+        const id = document.getElementById('resStudentSelect').value;
+        const marks = document.getElementById('marks').value;
+        const student = students.find(s => s.id == id);
+        if(!id || !marks) return alert("সব তথ্য দিন");
+
+        let grade = marks >= 80 ? 'A+' : marks >= 70 ? 'A' : marks >= 33 ? 'Pass' : 'F';
+        results.push({ ...student, grade, marks });
+        localStorage.setItem('edu_results', JSON.stringify(results));
+        renderResultTable();
+    }
+
+    function renderResultTable() {
+        const tbody = document.getElementById('resTableBody');
+        tbody.innerHTML = '';
+        results.forEach(r => {
+            tbody.innerHTML += `<tr><td>${r.roll}</td><td>${r.name}</td><td>${r.class}</td><td><b>${r.grade} (${r.marks})</b></td></tr>`;
+        });
+    }
+</script>
+
+</body>
+  </html>
