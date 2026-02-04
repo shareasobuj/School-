@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>টিচার্স প্যানেল - স্মার্ট স্কুল ম্যানেজমেন্ট</title>
+    <title>স্মার্ট স্কুল ম্যানেজমেন্ট - ফাইনাল আপডেট</title>
     <style>
         :root {
             --primary: #1e40af;
@@ -17,7 +17,7 @@
         body { background-color: var(--bg); color: #1e293b; line-height: 1.6; }
 
         @media print {
-            nav, .btn-group, .no-print, .delete-btn, .att-actions { display: none !important; }
+            nav, .btn-group, .no-print, .delete-btn, .att-actions, .action-col { display: none !important; }
             .card { box-shadow: none; border: 1px solid #ddd; }
             .container { max-width: 100%; margin: 0; padding: 0; }
         }
@@ -28,35 +28,31 @@
         .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
         .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 25px; }
 
-        .btn-group { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         .btn { padding: 10px 18px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; color: white; display: flex; align-items: center; gap: 5px; }
         .btn-primary { background: var(--primary); }
         .btn-success { background: var(--success); }
-        .btn-print { background: #475569; }
+        .btn-danger { background: var(--danger); padding: 5px 10px; font-size: 12px; }
 
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; transition: 0.3s; }
-        input:focus { border-color: var(--primary); }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; }
 
         .student-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .student-card { background: white; border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; position: relative; display: flex; padding: 15px; gap: 15px; }
-        .std-photo { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; }
-        .std-details h4 { color: var(--primary); font-size: 18px; }
+        .student-card { background: white; border: 1px solid #e2e8f0; border-radius: 10px; display: flex; padding: 15px; gap: 15px; position: relative; }
+        .std-photo { width: 70px; height: 70px; object-fit: cover; border-radius: 8px; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { padding: 12px; border: 1px solid #e2e8f0; text-align: left; font-size: 14px; }
+        th, td { padding: 12px; border: 1px solid #e2e8f0; text-align: left; }
         th { background: #f8fafc; }
 
         .hidden { display: none; }
-        .date-badge { background: #dcfce7; color: #166534; padding: 5px 12px; border-radius: 20px; font-weight: bold; margin-bottom: 10px; display: inline-block; }
+        .date-badge { background: #dcfce7; color: #166534; padding: 5px 12px; border-radius: 20px; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <nav>
     <div style="display: flex; align-items: center; gap: 10px;">
-        <span style="font-size: 20px;">🎓</span>
-        <h3>স্মার্ট স্কুল ড্যাশবোর্ড</h3>
+        <h3>🎓 স্কুল ম্যানেজমেন্ট</h3>
     </div>
     <div class="nav-menu">
         <button onclick="showSection('add')">ভর্তি</button>
@@ -69,78 +65,60 @@
 <div class="container">
     
     <section id="section-add" class="card">
-        <h2>📝 নতুন শিক্ষার্থী ভর্তি</h2>
+        <h2>📝 শিক্ষার্থী ভর্তি ফরম</h2>
         <div class="form-grid">
-            <input type="text" id="name" placeholder="শিক্ষার্থীর নাম">
+            <input type="text" id="name" placeholder="নাম">
             <select id="class">
                 <option value="">ক্লাস নির্বাচন</option>
                 <option>৬ষ্ঠ</option><option>৭ম</option><option>৮ম</option><option>৯ম</option><option>১০ম</option>
             </select>
-            <input type="number" id="roll" placeholder="রোল নম্বর">
+            <input type="number" id="roll" placeholder="রোল">
             <input type="text" id="father" placeholder="পিতার নাম">
             <input type="text" id="mother" placeholder="মাতার নাম">
             <input type="file" id="photo" accept="image/*">
         </div>
-        <textarea id="address" placeholder="ঠিকানা..." rows="2" style="margin-bottom: 20px;"></textarea>
-        <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="saveStudent()">ভর্তি নিশ্চিত করুন</button>
+        <textarea id="address" placeholder="ঠিকানা..." rows="2"></textarea>
+        <button class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 15px;" onclick="saveStudent()">সেভ করুন</button>
     </section>
 
     <section id="section-list" class="hidden">
-        <div class="btn-group no-print">
+        <div style="margin-bottom: 20px; display: flex; gap: 10px;" class="no-print">
             <button class="btn btn-success" onclick="downloadCSV()">Excel ডাউনলোড</button>
-            <button class="btn btn-print" onclick="window.print()">তালিকা প্রিন্ট</button>
-            <select id="filterClass" onchange="renderStudents()" style="width: 150px;">
-                <option value="All">সব ক্লাস</option>
-                <option>৬ষ্ঠ</option><option>৭ম</option><option>৮ম</option><option>৯ম</option><option>১০ম</option>
-            </select>
+            <button class="btn btn-primary" style="background:#475569" onclick="window.print()">তালিকা প্রিন্ট</button>
         </div>
-        <h2>শিক্ষার্থী তালিকা</h2>
         <div class="student-grid" id="studentDisplay"></div>
     </section>
 
     <section id="section-attendance" class="card hidden">
-        <h2>📅 উপস্থিতি রেজিস্টার</h2>
-        <div class="form-grid no-print" style="background: #f8fafc; padding: 15px; border-radius: 10px;">
-            <div>
-                <label>উপস্থিতির তারিখ নির্বাচন করুন:</label>
-                <input type="date" id="attDate">
-            </div>
-            <div style="display: flex; align-items: flex-end;">
-                <button class="btn btn-primary" onclick="renderAttendance()">তালিকা লোড করুন</button>
-            </div>
+        <h2>📅 উপস্থিতি</h2>
+        <div class="form-grid no-print">
+            <input type="date" id="attDate">
+            <button class="btn btn-primary" onclick="renderAttendance()">তালিকা দেখান</button>
         </div>
-
-        <div id="attListArea" class="hidden">
-            <div style="margin-top: 20px;">
-                <span class="date-badge">তারিখ: <span id="displayDate"></span></span>
-            </div>
+        <div id="attArea" class="hidden">
+            <span class="date-badge">তারিখ: <span id="displayDate"></span></span>
             <table>
-                <thead>
-                    <tr><th>রোল</th><th>নাম</th><th>ক্লাস</th><th>অবস্থা</th></tr>
-                </thead>
+                <thead><tr><th>রোল</th><th>নাম</th><th>অবস্থা</th></tr></thead>
                 <tbody id="attTableBody"></tbody>
             </table>
-            <div class="att-actions no-print" style="margin-top: 20px;">
-                <button class="btn btn-success" onclick="saveAttendanceData()">উপস্থিতি সেভ করুন</button>
-                <button class="btn btn-print" onclick="window.print()">শিট প্রিন্ট</button>
-            </div>
+            <button class="btn btn-success no-print" style="margin-top:15px" onclick="saveAttendanceData()">উপস্থিতি নিশ্চিত করুন</button>
         </div>
     </section>
 
     <section id="section-result" class="card hidden">
-        <h2>📊 পরীক্ষার ফলাফল</h2>
+        <h2>📊 ফলাফল শিট</h2>
         <div class="form-grid no-print">
             <select id="resStudentSelect"></select>
             <input type="number" id="marks" placeholder="প্রাপ্ত নম্বর">
             <button class="btn btn-primary" onclick="addResult()">ফলাফল যোগ</button>
         </div>
-        <button class="btn btn-print no-print" onclick="window.print()" style="margin-bottom:15px">রেজাল্ট শিট প্রিন্ট</button>
         <table>
             <thead>
-                <tr><th>রোল</th><th>নাম</th><th>ক্লাস</th><th>গ্রেড (নম্বর)</th></tr>
+                <tr><th>রোল</th><th>নাম</th><th>ক্লাস</th><th>গ্রেড</th><th class="action-col no-print">অ্যাকশন</th></tr>
             </thead>
             <tbody id="resTableBody"></tbody>
         </table>
+        <button class="btn btn-primary no-print" style="margin-top:15px; background:#475569" onclick="window.print()">ফলাফল প্রিন্ট</button>
     </section>
 
 </div>
@@ -150,100 +128,84 @@
     let results = JSON.parse(localStorage.getItem('edu_results')) || [];
     let attendanceRecords = JSON.parse(localStorage.getItem('edu_attendance')) || {};
 
-    // আজকের তারিখ ডিফল্ট সেট করা
     document.getElementById('attDate').valueAsDate = new Date();
 
     function showSection(id) {
         document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
         document.getElementById('section-' + id).classList.remove('hidden');
         if(id === 'list') renderStudents();
+        if(id === 'attendance') { document.getElementById('attArea').classList.add('hidden'); }
         if(id === 'result') updateResultUI();
     }
 
     function saveStudent() {
-        const data = {
-            name: document.getElementById('name').value,
-            class: document.getElementById('class').value,
-            roll: document.getElementById('roll').value,
-            father: document.getElementById('father').value,
-            mother: document.getElementById('mother').value,
-            address: document.getElementById('address').value,
-            id: Date.now()
-        };
-        const photoFile = document.getElementById('photo').files[0];
+        const name = document.getElementById('name').value;
+        const cls = document.getElementById('class').value;
+        const roll = document.getElementById('roll').value;
+        if(!name || !cls || !roll) return alert("তথ্য পূরণ করুন");
 
-        if(!data.name || !data.roll || !data.class) return alert("প্রয়োজনীয় তথ্য দিন!");
-
-        const save = (img) => {
-            students.push({...data, photo: img});
+        const reader = new FileReader();
+        const file = document.getElementById('photo').files[0];
+        
+        const completeSave = (img) => {
+            students.push({
+                id: Date.now(), name, class: cls, roll, 
+                father: document.getElementById('father').value,
+                mother: document.getElementById('mother').value,
+                address: document.getElementById('address').value,
+                photo: img || 'https://via.placeholder.com/70'
+            });
             localStorage.setItem('edu_db', JSON.stringify(students));
-            alert("ভর্তি সম্পন্ন!");
-            location.reload();
+            alert("ভর্তি সফল!"); location.reload();
         };
 
-        if(photoFile) {
-            const reader = new FileReader();
-            reader.onload = (e) => save(e.target.result);
-            reader.readAsDataURL(photoFile);
-        } else {
-            save('https://via.placeholder.com/80');
-        }
+        if(file) { reader.onload = (e) => completeSave(e.target.result); reader.readAsDataURL(file); }
+        else { completeSave(); }
     }
 
     function renderStudents() {
         const display = document.getElementById('studentDisplay');
-        const filter = document.getElementById('filterClass').value;
         display.innerHTML = '';
-        const filtered = filter === 'All' ? students : students.filter(s => s.class === filter);
-        filtered.forEach(s => {
+        students.forEach(s => {
             display.innerHTML += `
                 <div class="student-card">
                     <img src="${s.photo}" class="std-photo">
-                    <div class="std-details">
+                    <div>
                         <h4>${s.name}</h4>
-                        <p><b>রোল:</b> ${s.roll} | <b>ক্লাস:</b> ${s.class}</p>
-                        <p><b>পিতা:</b> ${s.father}</p>
-                        <button class="no-print" onclick="deleteStd(${s.id})" style="color:red; border:none; background:none; cursor:pointer; font-size:12px;">ডিলিট</button>
+                        <p>রোল: ${s.roll} | ক্লাস: ${s.class}</p>
+                        <button class="btn-danger no-print" onclick="deleteStd(${s.id})">ডিলিট</button>
                     </div>
                 </div>`;
         });
     }
 
     function deleteStd(id) {
-        if(confirm('মুছতে চান?')) {
+        if(confirm('শিক্ষার্থীকে মুছতে চান?')) {
             students = students.filter(s => s.id !== id);
             localStorage.setItem('edu_db', JSON.stringify(students));
             renderStudents();
         }
     }
 
-    // উপস্থিতি সিস্টেম - তারিখ ভিত্তিক
     function renderAttendance() {
         const date = document.getElementById('attDate').value;
-        if(!date) return alert("তারিখ নির্বাচন করুন");
-
+        if(!date) return;
         document.getElementById('displayDate').innerText = date;
-        document.getElementById('attListArea').classList.remove('hidden');
-        
+        document.getElementById('attArea').classList.remove('hidden');
         const tbody = document.getElementById('attTableBody');
         tbody.innerHTML = '';
-
-        // এই তারিখের আগের রেকর্ড থাকলে তা চেক করা
-        const existingDayData = attendanceRecords[date] || {};
-
+        const dayData = attendanceRecords[date] || {};
         students.forEach(s => {
-            const status = existingDayData[s.id] || "Present";
+            const status = dayData[s.id] || "Present";
             tbody.innerHTML += `
                 <tr>
-                    <td>${s.roll}</td>
-                    <td>${s.name}</td>
-                    <td>${s.class}</td>
+                    <td>${s.roll}</td><td>${s.name}</td>
                     <td>
-                        <select class="no-print att-status" data-id="${s.id}">
-                            <option value="Present" ${status === 'Present' ? 'selected' : ''}>উপস্থিত</option>
-                            <option value="Absent" ${status === 'Absent' ? 'selected' : ''}>অনুপস্থিত</option>
+                        <select class="att-status no-print" data-id="${s.id}">
+                            <option value="Present" ${status==='Present'?'selected':''}>উপস্থিত</option>
+                            <option value="Absent" ${status==='Absent'?'selected':''}>অনুপস্থিত</option>
                         </select>
-                        <span class="only-print">${status === 'Present' ? 'উপস্থিত' : 'অনুপস্থিত'}</span>
+                        <span class="only-print">${status}</span>
                     </td>
                 </tr>`;
         });
@@ -251,24 +213,17 @@
 
     function saveAttendanceData() {
         const date = document.getElementById('attDate').value;
-        const statuses = document.querySelectorAll('.att-status');
         const dayData = {};
-
-        statuses.forEach(select => {
-            dayData[select.dataset.id] = select.value;
-        });
-
+        document.querySelectorAll('.att-status').forEach(sel => dayData[sel.dataset.id] = sel.value);
         attendanceRecords[date] = dayData;
         localStorage.setItem('edu_attendance', JSON.stringify(attendanceRecords));
-        alert(date + " তারিখের উপস্থিতি সংরক্ষিত হয়েছে!");
+        alert("উপস্থিতি সেভ হয়েছে!");
     }
 
     function updateResultUI() {
         const select = document.getElementById('resStudentSelect');
-        select.innerHTML = '<option value="">ছাত্র নির্বাচন</option>';
-        students.forEach(s => {
-            select.innerHTML += `<option value="${s.id}">${s.class} - ${s.name} (${s.roll})</option>`;
-        });
+        select.innerHTML = '<option value="">নির্বাচন করুন</option>';
+        students.forEach(s => select.innerHTML += `<option value="${s.id}">${s.name} (${s.roll})</option>`);
         renderResultTable();
     }
 
@@ -276,10 +231,10 @@
         const id = document.getElementById('resStudentSelect').value;
         const marks = document.getElementById('marks').value;
         const student = students.find(s => s.id == id);
-        if(!id || !marks) return alert("সব তথ্য দিন");
-
-        let grade = marks >= 80 ? 'A+' : marks >= 70 ? 'A' : marks >= 33 ? 'Pass' : 'F';
-        results.push({ ...student, grade, marks });
+        if(!student || !marks) return alert("তথ্য দিন");
+        
+        let grade = marks >= 80 ? 'A+' : marks >= 70 ? 'A' : marks >= 60 ? 'A-' : marks >= 33 ? 'Pass' : 'F';
+        results.push({ resId: Date.now(), name: student.name, roll: student.roll, class: student.class, grade: `${grade} (${marks})` });
         localStorage.setItem('edu_results', JSON.stringify(results));
         renderResultTable();
     }
@@ -287,20 +242,32 @@
     function renderResultTable() {
         const tbody = document.getElementById('resTableBody');
         tbody.innerHTML = '';
-        results.forEach(r => {
-            tbody.innerHTML += `<tr><td>${r.roll}</td><td>${r.name}</td><td>${r.class}</td><td><b>${r.grade} (${r.marks})</b></td></tr>`;
+        results.forEach((r, index) => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${r.roll}</td><td>${r.name}</td><td>${r.class}</td><td>${r.grade}</td>
+                    <td class="action-col no-print">
+                        <button class="btn-danger" onclick="deleteResult(${index})">মুছুন</button>
+                    </td>
+                </tr>`;
         });
     }
 
+    function deleteResult(index) {
+        if(confirm('এই ফলাফলটি মুছতে চান?')) {
+            results.splice(index, 1);
+            localStorage.setItem('edu_results', JSON.stringify(results));
+            renderResultTable();
+        }
+    }
+
     function downloadCSV() {
-        let csv = "নাম,রোল,ক্লাস,পিতা,মাতা,ঠিকানা\n";
-        students.forEach(s => csv += `${s.name},${s.roll},${s.class},${s.father},${s.mother},${s.address}\n`);
+        let csv = "নাম,রোল,ক্লাস\n" + students.map(s => `${s.name},${s.roll},${s.class}`).join("\n");
         const link = document.createElement("a");
         link.href = encodeURI("data:text/csv;charset=utf-8," + csv);
-        link.download = "student_list.csv";
-        link.click();
+        link.download = "students.csv"; link.click();
     }
 </script>
 
 </body>
-                    </html>
+</html>
